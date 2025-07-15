@@ -16,11 +16,9 @@ Evaluating the Completed Object Detection Pipeline
 
 ![alt text](Support/Figure_3.png)
 
-## Dataset
-
+## Dataset & Dataset Structure
 [face-mask-12k-images-dataset](https://www.kaggle.com/datasets/ashishjangra27/face-mask-12k-images-dataset/code?datasetId=675484&sortBy=voteCount)
 
-## Dataset Structure
 ```
 Dataset/
 ├── Train/
