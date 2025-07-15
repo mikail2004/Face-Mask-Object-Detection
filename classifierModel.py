@@ -4,7 +4,8 @@
 import os
 import numpy as np
 import tensorflow as tf
-from keras import layers, models, regularizers
+from keras import layers, models
+from keras.optimizers import Adam
 from keras.utils import load_img, img_to_array
 from keras_preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
@@ -64,8 +65,7 @@ def viewData():
 
 # --- Creating Model ---
 def cnnModel(trainData, valData):
-    # This function builds, compiles, and trains a CNN using 'Transfer Learning'.
-    # Transfer learning with MobileNetV2 (As our dataset has <1000 images per class)
+    # Transfer learning with MobileNetV2
     base_model = tf.keras.applications.MobileNetV2(input_shape=(224, 224, 3), include_top=False, weights='imagenet')
 
     base_model.trainable = False
@@ -75,10 +75,8 @@ def cnnModel(trainData, valData):
         layers.GlobalAveragePooling2D(), # Reduces each feature map to a single number (averages spatial dimensions).
         layers.Dense(128, activation='relu'), # Fully connected layer for learning non-linear combinations of features.
         layers.Dropout(0.3), # Prevents overfitting by randomly dropping 30% of neurons during training.
-        layers.Dense(2, activation='softmax') # Output layer with 9 units (for 9 classes) and softmax for multi-class classification.
+        layers.Dense(2, activation='softmax') # Output layer with 2 units (for 2 classes) and softmax for multi-class classification.
     ])
-
-    model.summary() # Display architecture of model (The dimensions tend to shrink as you go deeper in the network)
 
 # --- Compile and Train Model ---
 
@@ -87,6 +85,8 @@ def cnnModel(trainData, valData):
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
         metrics=['accuracy']
     )
+
+    #model.summary() # Display architecture of model
 
     # Batch size kept to a small number if exceeding memory allocation
     history = model.fit(trainData, validation_data=valData, epochs=10)
@@ -97,11 +97,13 @@ if __name__ == "__main__":
     print("TensorFlow version:", tf.__version__)
     print("GPUs available:", tf.config.list_physical_devices('GPU'))
 
-    img1 = "C:/Users/m20mi/Documents/Work/FaceMask/50.png"
-    img2 = "C:/Users/m20mi/Documents/Work/FaceMask/582.png"
-    img3 = "C:/Users/m20mi/Documents/Work/FaceMask/Augmented_180_4100922.png"
-    img4 = "C:/Users/m20mi/Documents/Work/FaceMask/Augmented_804_8605594.png"
-    userImages = [img1, img2, img3, img4]
+    img1 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/50.png"
+    img2 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/582.png"
+    img3 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/5853.png"
+    img4 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/4686.png"
+    img5 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/0922.png"
+    img6 = "C:/Users/m20mi/Documents/Work/FaceMask/Eval_Images/5594.png"
+    userImages = [img1, img2, img3, img4, img5, img6]
 
     imagesTrain, labelsTrain, classLabels = loadData(trainDataPath, imgSize) # Call function loadData() to process training data
     imagesTest, labelsTest, classLabels = loadData(testDataPath, imgSize) # To process test data
@@ -159,6 +161,7 @@ if __name__ == "__main__":
 
         plt.xlabel(predClass)
         print(predClass)
+        print(predictions[0])
     plt.show()
 
-    #model.save('C:/Users/m20mi/Documents/Work/Dermia/Model/dermia_model.h5') # Export model for external use (.h5)
+    model.save('C:/Users/m20mi/Documents/Work/FaceMask/classifier_model.h5') # Export model for external use (.h5)
