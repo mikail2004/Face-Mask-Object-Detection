@@ -1,5 +1,5 @@
 # Mikail Usman 
-# FaceMask Object Detection
+# Face Mask Object Detection
 
 import os
 import numpy as np
