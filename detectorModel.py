@@ -9,9 +9,14 @@ import cv2
 
 np.set_printoptions(suppress=True)
 
-# Load the model
-model = load_model("C:/Users/m20mi/Documents/Work/FaceMask/classifier_model.h5", compile=False)
-class_names = ['Wearing Mask', 'No Mask']
+# Load the Haar Cascade model
+modelHaar = load_model("C:/Users/m20mi/Documents/Work/FaceMask/classifier_model.h5", compile=False)
+classLabels = ['Wearing Mask', 'No Mask']
+
+# Load the NN model (MobileNetV3)
+modelNNConfig = "C:/Users/m20mi/Documents/Work/FaceMask/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
+modelNNFrozen = "C:/Users/m20mi/Documents/Work/FaceMask/ssd_mobilenet_v3_large_coco_2020_01_14/frozen_inference_graph.pb"
+detectLabels = ['face']
 
 # Process image by resizing, converting to array
 def processImage(inputIMG):
@@ -31,6 +36,18 @@ def haarFaceDetection(inputIMG):
 
     return faceDetected
 
+# Object detection using pre-trained NN model (Although not used due to insufficient classes)
+def MobileNetDetection(inputImg):
+    model = cv2.dnn_DetectionModel(modelNNFrozen, modelNNConfig)
+    model.setInputSize(224, 224)
+    model.setInputScale(1.0/127.5)
+    model.setInputMean((127.5, 127.5, 127.5))
+    model.setInputSwapRB(True)
+
+    classID, confidence, boxes = model.detect(inputImg, confThreshold=0.6)
+
+    print(classID, confidence)
+
 def drawBoundingBox(inputImg):
     # Obtain bounding box coordinates (detected object) and draw them
     for (x, y, w, h) in haarFaceDetection(inputImg):
@@ -44,7 +61,7 @@ def drawBoundingBox(inputImg):
         # Run classifier model on cropped face
         face_resized = cv2.resize(face, (224, 224)) / 255.0
         face_input = np.expand_dims(face_resized, axis=0)
-        label = class_names[np.argmax(model.predict(face_input))]
+        label = classLabels[np.argmax(modelHaar.predict(face_input))]
         cv2.putText(inputImg, str(label), (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     
     return inputImg
@@ -54,7 +71,7 @@ def liveDetection():
 
     while True:
         ret, frame = camera.read()
-        cv2.imshow('FaceMask', drawBoundingBox(frame))
+        cv2.imshow('Face Mask Detector', drawBoundingBox(frame))
 
         if cv2.waitKey(1) == ord('q'):
             break
@@ -71,10 +88,6 @@ if __name__ == '__main__':
 
     liveDetection()
 
-    # selectedImg = processImage(img5)
-    # processedImg = drawBoundingBox(selectedImg)
-    # cv2.imshow("Output Image", processedImg)
-
-    # #print(classifyImage(img1))
+    # cv2.imshow('Face Mask Detector', drawBoundingBox(processImage(img4)))
     # cv2.waitKey(0) # Keep image window open until user closes it
     # cv2.destroyAllWindows() # Delete all windows from memory once user closes them
