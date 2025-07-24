@@ -14,8 +14,8 @@ modelHaar = load_model("C:/Users/m20mi/Documents/Work/FaceMask/classifier_model.
 classLabels = ['Wearing Mask', 'No Mask']
 
 # Load the NN model (MobileNetV3)
-modelNNConfig = "C:/Users/m20mi/Documents/Work/FaceMask/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
-modelNNFrozen = "C:/Users/m20mi/Documents/Work/FaceMask/ssd_mobilenet_v3_large_coco_2020_01_14/frozen_inference_graph.pb"
+modelNNConfig = "C:/Users/m20mi/Documents/Work/FaceMask/DNN_MobileNetV3/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
+modelNNFrozen = "C:/Users/m20mi/Documents/Work/FaceMask/DNN_MobileNetV3/frozen_inference_graph.pb"
 detectLabels = ['face']
 
 # Process image by resizing, converting to array
